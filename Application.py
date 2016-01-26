@@ -2,11 +2,11 @@
 
 ########################################################################################################################
 #                                                                                                                      #
-#       File Name:    Member.py                                                                                        #
+#       File Name:    Application.py                                                                                   #
 #                                                                                                                      #
 #       Author:       Islam Wahdan                                                                                     #
 #                                                                                                                      #
-#       Description:  Class Defining a Bus Member and all his/her attributes                                           #
+#       Description:  Application Handling User Interactions                                                           #
 #                                                                                                                      #
 #       Language:     Python                                                                                           #
 #                                                                                                                      #
@@ -20,78 +20,32 @@
 #       Initial Revision                                                                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 import Defs
+import Member
+import Database
+import telepot
+import json
 
-class BusMember:
-    """Class Defining a Typical Bus Member"""
+MyBot = telepot.Bot("102176437:AAFufVB0sWxKhJn34Mo8EmyOSJjeUb436WM")
 
-    def __init__(self, username, memtype, status, admin):
-        """
-        :type username: String
-        :type memtype: MembershipType
-        :type status: TripRegStatusject
-        :type admin: boolean
-        """
-        self.UserName = username
-        self.MemType = memtype
-        self.TripStatus = status
-        self.IsAdmin = admin
+def application(environ, start_response):
 
-    def GetUserName(self):
-        """
+    if environ['REQUEST_METHOD'] == 'POST':
 
-        :return: String
-        """
-        return self.UserName
+        ctype = 'text/html'
+        rawdata = environ['wsgi.input'].read()
+        DecaodedData = json.load(rawdata)
+        ChatID = DecaodedData['chat']
+        FirstName = DecaodedData['first_name']
+        Lastname = DecaodedData['last_name']
+        MessageID = DecaodedData['message_id']
 
-    def GetMemType(self):
-        """
+        MyBot.sendMessage(chat_id=ChatID, text="ACKNOLEDGE", reply_to_message_id=MessageID)
 
-        :return: Defs.MembershipType
-        """
-        return self.MemType
+    response_body = "OK"
+    response_body = response_body.encode('utf-8')
 
-    def GetTripStatus(self):
-        """
-
-        :return: Defs.TripRegStatus
-        """
-        return self.TripStatus
-
-    def GetAdminRights(self):
-        """
-
-        :return: Boolean
-        """
-        return self.IsAdmin
-
-    def SetUserName(self, user):
-        """
-
-        :param user: User name
-        :return: None
-        """
-        self.UserName = user
-
-    def SetMemType(self, memtype):
-        """
-
-        :param memtype: Membership Type
-        :return: None
-        """
-        self.MemType = memtype
-
-    def SetTripStatus(self, status):
-        """
-
-        :param status: Member Trip Status
-        :return: None
-        """
-        self.TripStatus = status
-
-    def SetAdmin(self, admin):
-        """
-
-        :param admin: Member Admin Rights
-        :return: None
-        """
-        self.IsAdmin = admin
+    status = '200 OK'
+    response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
+    #
+    start_response(status, response_headers)
+    return [response_body]
